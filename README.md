@@ -25,7 +25,10 @@ python3
   `业务课二` varchar(40) DEFAULT NULL,
   `外语` varchar(40) DEFAULT NULL,
   `政治` varchar(40) DEFAULT NULL,
-  `所在地` varchar(30) DEFAULT NULL
+  `所在地` varchar(30) DEFAULT NULL,
+  `专业代码` varchar(10) DEFAULT NULL,
+  `门类` varchar(20) DEFAULT NULL,
+  `一级学科` varchar(40) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8
 ```
 ## 使用时修改yzw/spiders/schools.ini

@@ -5,6 +5,7 @@ import xlwt
 import re
 
 import os
+import sys
 # Define your item pipelines here
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
@@ -16,6 +17,7 @@ class YzwPipeline(object):
     def open_spider(self,spider):
         self.conf = configparser.ConfigParser()
         self.conf.read('yzw/spiders/schools.ini','utf8')
+        self.auto_shutdown = self.conf.get('config','auto_shutdown')
         if self.conf.get('MySQL','MySQL') == 'True':
             self.d = pymysql.connect(host=self.conf.get('MySQL','host'),
                                      user=self.conf.get('MySQL','user'),
@@ -51,7 +53,13 @@ class YzwPipeline(object):
         try:
             if self.conf.get('MySQL','MySQL') == 'True':
                 self.d.close()
-                os.system("shutdown -s -t 0")
+                if self.auto_shutdown == 'True':
+                    if sys.platform.startswith('linux'):
+                        os.system("shutdown 1")
+                    elif sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
+                        os.system("shutdown -s -t 60")
+                    elif sys.platform.startswith('darwin'):
+                        os.system("sudo shutdown -h +1")
             else:
                 self.wbk.save(self.conf.get('config','filename')+'.xls')
         except:

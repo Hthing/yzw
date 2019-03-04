@@ -44,7 +44,8 @@ class SchoolsSpider(scrapy.Spider):
                 url = re.sub(r'queryAction','querySchAction',response.url)
                 url = re.sub(r'dwmc=','dwmc='+schName,url)
                 yield scrapy.Request(url,meta={'flag':flag},callback=self.parse_school)
-            except:
+            except Exception as e:
+                self.logger.info(e)
                 continue
 
         page = response.xpath('//div[re:test(@class,"zsml-page-box")]/ul/li').css('a::attr(onclick)').extract()
@@ -55,7 +56,8 @@ class SchoolsSpider(scrapy.Spider):
                 nextPage = re.findall(r'\(.*?\)',page)[0][1:-1]
                 url = re.sub(r'pageno=\d*','pageno='+nextPage ,response.url)
                 yield scrapy.Request(url,callback=self.parse)
-            except:
+            except Exception as e:
+                self.logger.info(e)
                 pass
 
     def parse_school(self,response):
@@ -63,14 +65,15 @@ class SchoolsSpider(scrapy.Spider):
         n = len(majorInfo)
         for i in range(1,n):
             try:
-                str = majorInfo[i].css('td::text')[1].extract()
+                str = majorInfo[i].css('td::text')[2].extract()
                 majorCode = re.findall(r'\(.*?\)',str)[0][1:-1]
-                url = 'http://yz.chsi.com.cn' + majorInfo[i].css('td')[6].css('a::attr(href)')[0].extract()
+                url = 'http://yz.chsi.com.cn' + majorInfo[i].css('td')[7].css('a::attr(href)')[0].extract()
                 yield scrapy.Request(url,meta={'url':response.url,
                                                'flag':response.meta['flag'],
                                                'majorCode':majorCode},
                                      callback=self.parse_major)
-            except:
+            except Exception as e:
+                self.logger.info(e)
                 continue
 
         page = response.xpath('//div[re:test(@class,"zsml-page-box")]/ul/li').css('a::attr(onclick)').extract()
@@ -81,7 +84,8 @@ class SchoolsSpider(scrapy.Spider):
                 nextPage = re.findall(r'\(.*?\)',page)[0][1:-1]
                 url = re.sub(r'pageno=\d*','pageno='+nextPage ,response.url)
                 yield scrapy.Request(url,meta={'flag':response.meta['flag']},callback=self.parse_school)
-            except:
+            except Exception as e:
+                self.logger.info(e)
                 pass
 
 

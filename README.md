@@ -50,6 +50,9 @@ mldm = 08
 #一级学科代码 可为空
 yjxkdm = 0812
 
+#若为True 将在使用MySQL情况下完成爬取任务一分钟后自动关机 默认为True ，输出为xls文件时不执行
+auto_shutdown = True
+
 #专业名称  可为空
 zymc =
 [MySQL]

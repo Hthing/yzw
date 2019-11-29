@@ -10,9 +10,11 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = 'yzw'
-
 SPIDER_MODULES = ['yzw.spiders']
 NEWSPIDER_MODULE = 'yzw.spiders'
+
+LOG_LEVEL = 'DEBUG'
+LOG_FILE = 'log.txt'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

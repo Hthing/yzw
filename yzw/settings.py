@@ -7,10 +7,9 @@ conf.read('./schools.ini','utf8')
 BOT_NAME = 'yzw'
 SPIDER_MODULES = ['yzw.spiders']
 NEWSPIDER_MODULE = 'yzw.spiders'
-
+# 日志级别与输出路径
 LOG_LEVEL = 'INFO'
-#LOG_FILE = 'log.txt'
-
+LOG_FILE = 'log.txt'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
 

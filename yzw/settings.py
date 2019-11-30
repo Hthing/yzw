@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
+import configparser
 
-# Scrapy settings for yzw project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     http://doc.scrapy.org/en/latest/topics/settings.html
-#     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+conf = configparser.ConfigParser()
+conf.read('./schools.ini','utf8')
 
 BOT_NAME = 'yzw'
 SPIDER_MODULES = ['yzw.spiders']
 NEWSPIDER_MODULE = 'yzw.spiders'
 
-LOG_LEVEL = 'DEBUG'
-LOG_FILE = 'log.txt'
-
+LOG_LEVEL = 'INFO'
+#LOG_FILE = 'log.txt'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'

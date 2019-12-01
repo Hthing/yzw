@@ -5,7 +5,7 @@ scrapy爬取研招网专业信息(末尾有度盘全部数据)
 
 数据大概这个样子，获得数据之后我们就能方便地进行筛选了。
 
-![图1]( https://github.com/Hthing/yzw/edit/master/img/excel.png)
+![图1](https://github.com/Hthing/yzw/blob/master/img/excel.png) 
 
 ## 依赖库：  
 xlwt  、pymysql  、scrapy
@@ -122,13 +122,14 @@ LOG_LEVEL = 'INFO'
     python ./yzw/start.py
     ```
 
-## 爬取页面
-
-​	爬取的页面如下，另外每行数据的id由页面的id以及考试范围顺序组成
-
-​	![图2](https://github.com/Hthing/yzw/edit/master/img/page.png)
-
 附上最终数据
 
 链接：https://pan.baidu.com/s/1T-ejrTdqMTodA1T2DWU9Dg 
 提取码：xt3e
+
+## 爬取页面
+
+​	爬取的页面如下，另外每行数据的id由页面的id以及考试范围顺序组成
+
+​	![图2](https://github.com/Hthing/yzw/blob/master/img/page.png)
+

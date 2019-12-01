@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-import mySettings
+import mysettings as st
 """
     获取一级学科目录并存储到文件 mySettings.FCSI_File 
     格式:{ 代码 : 名称 }
@@ -18,7 +18,7 @@ class SubjectsSpider(scrapy.Spider):
         try:
             list = eval(response.text)
             firstClassSubjectIndex = {item['dm']: item['mc'] for item in list}
-            with open(mySettings.FCSI_File, 'w', encoding='utf-8') as f:
+            with open(st.FCSI_File, 'w', encoding='utf-8') as f:
                 f.write(str(firstClassSubjectIndex))
         except Exception as e:
             print(e)

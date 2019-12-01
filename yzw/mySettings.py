@@ -22,7 +22,7 @@ filename = conf.get('config', 'filename')
 # 若为True 将在完成爬取任务一分钟后自动关机 默认为False
 auto_shutdown = conf.get('config', 'auto_shutdown')
 #一级学科目录文件名称
-FCSI_File = 'firstClassSubjectIndex.txt'
+FCSI_File = 'first_class_subject_index.txt'
 
 # MySQL
 MySQL = conf.get('MySQL', 'MySQL')

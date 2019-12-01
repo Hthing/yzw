@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import re
-import mySettings as st
+import mysettings as st
 import traceback
-from items import YzwItem
 
 
 

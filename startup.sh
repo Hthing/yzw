@@ -1,1 +1,0 @@
-python ./yzw/start.py

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
-import yzwspider.yzw.mysettings as st
+import traceback
+import os
+
 """
     获取一级学科目录并存储到文件 mySettings.FCSI_File 
     格式:{ 代码 : 名称 }
@@ -9,6 +11,10 @@ import yzwspider.yzw.mysettings as st
 
 class SubjectsSpider(scrapy.Spider):
     name = 'subjects'
+    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    custom_settings = {
+        'ITEM_PIPELINES': None
+    }
 
     def start_requests(self):
         url = 'https://yz.chsi.com.cn/zsml/pages/getZy.jsp'
@@ -18,7 +24,8 @@ class SubjectsSpider(scrapy.Spider):
         try:
             list = eval(response.text)
             firstClassSubjectIndex = {item['dm']: item['mc'] for item in list}
-            with open(st.FCSI_File, 'w', encoding='utf-8') as f:
+            path = os.path.join(self.PROJECT_ROOT, self.settings.get('FCSI_FILE'))
+            with open(path, 'w', encoding='utf-8') as f:
                 f.write(str(firstClassSubjectIndex))
         except Exception as e:
-            print(e)
+            self.logger.error(traceback.format_exc(e))

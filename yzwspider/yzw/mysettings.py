@@ -3,8 +3,10 @@
 import configparser
 import os
 
+project_root_path = os.path.dirname(os.path.dirname(__file__))
+
 conf = configparser.ConfigParser()
-conf.read(os.getcwd() + '/yzwspider/schools.ini','utf8')
+conf.read( os.path.join(project_root_path, "schools.ini"),'utf8')
 # 省市代码 默认11（北京）可为空
 ssdm = conf.get('config','ssdm')
 
@@ -19,11 +21,11 @@ zymc = conf.get('config','zymc')
 
 # excel文件名称
 filename = conf.get('config', 'filename')
-
+file_path = conf.get('config', 'filepath')
 # 若为True 将在完成爬取任务一分钟后自动关机 默认为False
 auto_shutdown = conf.get('config', 'auto_shutdown')
 #一级学科目录文件名称
-FCSI_File = 'first_class_subject_index.txt'
+FCSI_File = os.path.join(project_root_path, 'first_class_subject_index.txt')
 
 # MySQL
 MySQL = conf.get('MySQL', 'MySQL')
@@ -59,5 +61,5 @@ list_211 = ["北京大学", "中国人民大学", "清华大学", "北京交通�
             "湖南大学", "中南大学", "湖南师范大学", "国防科学技术大学", "中山大学", "暨南大学", "华南理工大学", "华南师范大学", "广西大学", "海南大学", "四川大学", "西南交通大学",
             "电子科技大学", "四川农业大学", "西南财经大学", "重庆大学", "西南大学", "贵州大学", "云南大学", "西藏大学", "西北大学", "西安交通大学", "西北工业大学",
             "西安电子科技大学", "长安大学", "西北农林科技大学", "陕西师范大学", "第四军医大学", "兰州大学", "青海大学", "宁夏大学", "新疆大学", "石河子大学"]
-subjectIndex = {'06': '历史学', '12': '管理学', '07': '理学', '03': '法学', '08': '工学', '13': '艺术学', '10': '医学', '11': '军事学',
-                '05': '文学', '04': '教育学', '01': '哲学', '09': '农学', '02': '经济学'}
+subjectIndex = {'01': '哲学', '02': '经济学', '03': '法学', '04': '教育学', '05': '文学', '06': '历史学', '07': '理学',
+                '08': '工学', '09': '农学', '10': '医学', '11': '军事学', '12': '管理学', '13': '艺术学'}

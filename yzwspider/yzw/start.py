@@ -8,10 +8,13 @@ from twisted.python import log
 import logging
 
 
-def startup():
-    configure_logging()
-    runner = CrawlerRunner(get_project_settings())
+def startup(my_settings={}):
 
+    settings = get_project_settings()
+    for key, value in my_settings.items():
+        settings.attributes[key].value = value
+    configure_logging(settings)
+    runner = CrawlerRunner(settings)
 
     @defer.inlineCallbacks
     def crawl():
@@ -19,11 +22,10 @@ def startup():
         yield runner.crawl(schools.SchoolsSpider)
         reactor.stop()
 
-    logging.basicConfig(level=logging.INFO, filemode='w', filename='log.txt')
-    observer = log.PythonLoggingObserver()
-    observer.start()
     crawl()
     reactor.run()
 
+
 if __name__ == '__main__':
     startup()
+    pass

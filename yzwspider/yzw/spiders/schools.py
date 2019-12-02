@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import re
-import mysettings as st
+import yzwspider.yzw.mysettings as st
 import traceback
 
 

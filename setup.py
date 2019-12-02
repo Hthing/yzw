@@ -1,15 +1,12 @@
 import setuptools
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
 setuptools.setup(
-    name="yzw_spider",
-    version="0.0.1",
+    name="yzwspider",
+    version="0.0.3",
     author="Hthing",
     author_email="hxcnly@gmail.com",
     description="A web spider for Chinese graduate student examination catalogue.",
-    long_description=long_description,
+    long_description="scrapy实现研招网专业目录爬虫，详见https://github.com/Hthing/yzw/tree/master/",
     long_description_content_type="text/markdown",
     url="https://github.com/Hthing/yzw/tree/master/",
     license = "MIT Licence",
@@ -20,4 +17,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.5',
+    install_requires = ["xlwt", 'pymysql', 'scrapy'] ,
+    package_data = {
+        'yzwspider': ['schools.ini', 'scrapy.cfg'],
+    },
 )

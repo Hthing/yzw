@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pymysql
 import xlwt
-import mysettings as st
+import yzwspider.yzw.mysettings as st
 import logging
 import os
 import sys

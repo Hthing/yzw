@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import configparser
+import os
 
 conf = configparser.ConfigParser()
-conf.read('./schools.ini','utf8')
+conf.read(os.getcwd() + '/yzwspider/schools.ini','utf8')
 # 省市代码 默认11（北京）可为空
 ssdm = conf.get('config','ssdm')
 

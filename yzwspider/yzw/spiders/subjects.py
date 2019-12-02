@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-import mysettings as st
+import yzwspider.yzw.mysettings as st
 """
     获取一级学科目录并存储到文件 mySettings.FCSI_File 
     格式:{ 代码 : 名称 }

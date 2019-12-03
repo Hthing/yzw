@@ -13,6 +13,7 @@ class SchoolsSpider(scrapy.Spider):
     st = {}
     PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
+
     def start_requests(self):
         self.st = {i : self.settings.attributes[i].value for i in self.settings.attributes.keys() }
         path = os.path.join(self.PROJECT_ROOT, self.settings.get('FCSI_FILE'))

@@ -7,8 +7,6 @@ from twisted.enterprise import adbapi
 import traceback
 
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
-
 
 class YzwPipeline(object):
     def __init__(self, pool, settings):
@@ -42,16 +40,14 @@ class YzwPipeline(object):
             sql = "DROP TABLE IF EXISTS `{0}`".format(self.settings.get("TABLE"))
             re = txn.execute(sql)
             sql = self.settings.get("CREATE_TEBLE_SQL").format(self.settings.get("TABLE"))
-            res = txn.execute(sql)
+            re = txn.execute(sql)
             self.logger.info("创建表:'%s'成功." % self.settings.get('TABLE'))
         except Exception as e:
             self.logger.critical(traceback.format_exc(e))
 
     def open_spider(self, spider):
-        print("oooopppppeeeeennnnn")
         if self.dbpool:
-            print("ssssssssssssssssssssssssopenspider")
-            #obj = self.dbpool.runInteraction(self._create_table)
+            obj = self.dbpool.runInteraction(self._create_table)
         else:
             self.newExcelFile()
 
@@ -59,10 +55,12 @@ class YzwPipeline(object):
         try:
             if self.dbpool:
                 self.dbpool.close()
+                self.logger.info("数据已存储于数据库" + self.settings.get("DATABASE") + "， 表："+ self.settings.get("TABLE"))
             else:
                 self.wbk.save(self.excelFile)
+                self.logger.info("excel文件已存储于 "+ self.excelFile)
         except Exception as e:
-            self.logger.critical(traceback.format_exc(e))
+            self.logger.error(traceback.format_exc(e))
 
     def process_item(self, item, spider):
         try:
@@ -72,7 +70,6 @@ class YzwPipeline(object):
                 self.process_excel(item)
         except Exception as e:
             self.logger.critical(traceback.format_exc(e))
-        return item
 
     def process_mysql(self, item):
         result = self.dbpool.runInteraction(self.insert, item)

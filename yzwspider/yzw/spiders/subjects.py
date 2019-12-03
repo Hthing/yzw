@@ -13,7 +13,8 @@ class SubjectsSpider(scrapy.Spider):
     name = 'subjects'
     PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     custom_settings = {
-        'ITEM_PIPELINES': None
+        'ITEM_PIPELINES': None,
+        'LOG_LEVEL': 'ERROR',
     }
 
     def start_requests(self):

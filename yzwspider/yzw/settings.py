@@ -4,16 +4,17 @@
 BOT_NAME = 'yzw'
 SPIDER_MODULES = ['yzw.spiders']
 NEWSPIDER_MODULE = 'yzw.spiders'
-# 日志级别与输出路径
-LOG_LEVEL = 'INFO'
-LOG_FILE = 'log.txt'
-
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
-ROBOTSTXT_OBEY = True
 CONCURRENT_REQUESTS = 32
 ITEM_PIPELINES = {
     'yzw.pipelines.YzwPipeline': 300,
 }
+
+# 日志级别与输出路径
+LOG_LEVEL = 'INFO'
+LOG_FILE = 'log.txt'
+
+
 
 SSDM = '11'
 MLDM = '01'

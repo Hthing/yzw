@@ -12,7 +12,9 @@ class SchoolsSpider(scrapy.Spider):
     firstClassSubjectIndex = {}
     st = {}
     PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-
+    custom_settings = {
+        'STATS_CLASS': 'yzw.collector.YzwCollector',
+    }
 
     def start_requests(self):
         self.st = {i : self.settings.attributes[i].value for i in self.settings.attributes.keys() }

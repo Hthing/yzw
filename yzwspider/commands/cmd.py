@@ -2,7 +2,7 @@
 
 import argparse
 import os
-from yzwspider.yzw.settings import PROVINCE_LISE
+from yzwspider.yzw.settings import PROVINCE_DICT, SUBJECT_INDEX
 import yzwspider.yzw.start as start
 
 
@@ -12,37 +12,42 @@ def run():
 
 
 def excel_settings(args):
-    dict = {}
-    dict['MYSQL'] = False
-    dict['EXCEL_FILE_PATH'] = args.o
+    prams = {}
+    prams['MYSQL'] = False
+    prams['EXCEL_FILE_PATH'] = args.o
     if args.all is True:
         print("爬取全部信息时请使用mysql")
         exit(0)
-    return dict
+    return prams
 
 
 def mysql_settings(args):
-    dict = {}
-    dict['MYSQL'] = True
-    dict['HOST'] = args.host
-    dict['USER'] = args.u
-    dict['PASSWORD'] = args.p
-    dict['PORT'] = args.port
-    dict['DATABASE'] = args.db
-    dict['TABLE'] = args.table
-    return dict
+    prams = {}
+    prams['MYSQL'] = True
+    prams['HOST'] = args.host
+    prams['USER'] = args.u
+    prams['PASSWORD'] = args.p
+    prams['PORT'] = args.port
+    prams['DATABASE'] = args.db
+    prams['TABLE'] = args.table
+    return prams
 
 
 def general_settings(args):
-    dict = {}
-    dict['SSDM'] = args.ssdm if args.all is False else ''
-    dict['MLDM'] = args.mldm if args.all is False else ''
-    dict['YJXKDM'] = args.yjxk if args.all is False else ''
+    prov_num = dict(zip(PROVINCE_DICT.values(), PROVINCE_DICT.keys()))
+    subj_num = dict(zip(SUBJECT_INDEX.values(), SUBJECT_INDEX.keys()))
+    prams = {}
+    prams['SSDM'] = args.ssdm if args.all is False else ''
+    prams['SSDM'] = prams['SSDM'] if not is_chinese(prams['SSDM']) else prov_num[prams['SSDM']]
+    prams['MLDM'] = args.mldm if args.all is False else ''
+    prams['MLDM'] = prams['MLDM'] if not is_chinese(prams['MLDM']) else subj_num[prams['MLDM']]
+    prams['YJXKDM'] = args.yjxk if args.all is False else ''
+    prams['LOG_LEVEL'] = args.lglevel
     if not args.log:
-        dict['LOG_FILE'] = None
+        prams['LOG_FILE'] = None
     else:
         print("日志文件将输出至当前目录.")
-    return dict
+    return prams
 
 
 def get_settings(args):
@@ -53,15 +58,16 @@ def get_settings(args):
 
 
 def args_parse():
-    usage = """yzwspider [-h] [-ssdm] [-mldm] [-yjxk] [--all] [--log] 输出目标 [其他参数]
+    usage = """yzwspider [-h] [-ssdm] [-mldm] [-yjxk] [-lglevel] [--all] [--log] 输出目标 [其他参数]
               \t例, yzwspider -ssdm 11 -yjxk 0812 excel -o 文件输出路径
               \t    yzwspider -ssdm 11 -yjxk 0812 mysql -p 你的密码 -db 数据库 -table 数据表
               \t    具体参数以及默认值请使用 yzwspider 输出目标 -h 查看
               """
     parser = argparse.ArgumentParser(prog='yzwspider', usage=usage)
-    parser.add_argument('-ssdm', help='省市代码(默认11)', choices=PROVINCE_LISE, metavar='省市代码', default='11')
-    parser.add_argument('-mldm', help="门类代码(默认01)", choices=[str(i).zfill(2) for i in range(1,14)], metavar='门类代码', default='01')
+    parser.add_argument('-ssdm', help='省市代码(默认11)，中文名称也可.', choices=[*PROVINCE_DICT.keys(), *PROVINCE_DICT.values()], metavar='省市代码', default='11')
+    parser.add_argument('-mldm', help="门类代码(默认01)", choices=[*SUBJECT_INDEX.keys(), *SUBJECT_INDEX.values()], metavar='门类代码', default='01')
     parser.add_argument('-yjxk', help='一级学科代码(默认0101)', metavar='一级学科代码', default='0101')
+    parser.add_argument('-lglevel', help='日志等级(INFO)', metavar='日志等级', default='INFO')
     parser.add_argument('--all', help='爬取全国所有专业并输出到mysql',  action='store_true')
     parser.add_argument('--log', help='保存日志文件', action='store_true')
     sub_parser = parser.add_subparsers(metavar='输出目标', required=True)
@@ -90,3 +96,10 @@ def mysql_parse(subparser):
     parser_mysql.add_argument('-db', help='数据库(yanzhao)', metavar='数据库名', default='yanzhao')
     parser_mysql.add_argument('-table', help='数据表(major)', metavar='数据表名', default='major')
     parser_mysql.set_defaults(func=mysql_settings)
+
+
+def is_chinese(word):
+    for ch in word:
+        if '\u4e00' <= ch <= '\u9fff':
+            return True
+    return False

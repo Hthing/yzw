@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import re
-import mysettings as st
+import os
 import traceback
-
 
 
 class SchoolsSpider(scrapy.Spider):
@@ -11,14 +10,21 @@ class SchoolsSpider(scrapy.Spider):
     allowed_domains = ['chsi.com.cn']
     start_urls = []
     firstClassSubjectIndex = {}
+    st = {}
+    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    custom_settings = {
+        'STATS_CLASS': 'yzwspider.yzw.collector.YzwCollector',
+    }
 
     def start_requests(self):
-        with open(st.FCSI_File, 'r', encoding='utf-8') as f:
+        self.st = {i : self.settings.attributes[i].value for i in self.settings.attributes.keys() }
+        path = os.path.join(self.PROJECT_ROOT, self.settings.get('FCSI_FILE'))
+        with open(path, 'r', encoding='utf-8') as f:
             self.firstClassSubjectIndex = eval(f.read())
-        gen = self.__ssdm_yjxk(st.ssdm, st.yjxkdm)
+        gen = self.__ssdm_yjxk(self.settings.get('SSDM'), self.settings.get('YJXKDM'))
         for ssdm, yjxkdm in gen:
-            url =  'https://yz.chsi.com.cn/zsml/queryAction.do?ssdm={}&dwmc=&mldm={}&mlmc=&yjxkdm={}&xxfs=&zymc={}&pageno=1'\
-                .format(ssdm, st.mldm, yjxkdm, st.zymc)
+            url =  'https://yz.chsi.com.cn/zsml/queryAction.do?ssdm={}&dwmc=&mldm={}&mlmc=&yjxkdm={}&pageno=1'\
+                .format(ssdm, self.settings.get('MLDM'), yjxkdm)
             yield scrapy.Request(url, meta={'ssdm':ssdm}, callback=self.parse)
 
     # 爬取学校目录
@@ -26,15 +32,14 @@ class SchoolsSpider(scrapy.Spider):
         for tr in response.xpath('//tbody/tr'):
             try:
                 schName = tr.xpath('.//a[re:test(@href,"/zsml/querySchAction.do?")]/text()').extract()[0][7:]
-                schFeature = self.__getSchoolFeature(schName)
                 url = re.sub(r'queryAction', 'querySchAction', response.url)
                 url = re.sub(r'dwmc=', 'dwmc=' + schName, url)
                 yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse_school)
             except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+                self.logger.error(traceback.format_exc())
                 continue
         # 翻页
-        url = self.__nextPageUrl(response)
+        url = self.__next_page_url(response)
         if url:
             yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse)
 
@@ -49,10 +54,10 @@ class SchoolsSpider(scrapy.Spider):
                 url = 'https://yz.chsi.com.cn' + majorInfo[i].css('td')[7].css('a::attr(href)')[0].extract()
                 yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse_major)
             except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+                self.logger.error(traceback.format_exc())
                 continue
         # 翻页
-        url = self.__nextPageUrl(response)
+        url = self.__next_page_url(response)
         if url:
             yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse_school)
 
@@ -77,42 +82,42 @@ class SchoolsSpider(scrapy.Spider):
                 majorDict['外语'] = re.sub(r'\s', '', body.css('td::text')[2].extract())
                 majorDict['业务课一'] = re.sub(r'\s', '', body.css('td::text')[3].extract())
                 majorDict['业务课二'] = re.sub(r'\s', '', body.css('td::text')[4].extract())
-                majorDict['所在地'] = st.dict[province]
+                majorDict['所在地'] = self.settings.get('PROVINCE_DICT')[province]
                 majorDict['指导老师'] = majorInfo[3].xpath('td')[3].xpath('text()').extract()
                 majorDict['指导老师'] = majorDict['指导老师'][0] if majorDict['指导老师'] else ''
                 majorDict['专业代码'] = majorDict['专业'][1:7]
-                majorDict['门类'] = st.subjectIndex[majorDict['专业代码'][:2]]
+                majorDict['门类'] = self.settings.get('SUBJECT_INDEX')[majorDict['专业代码'][:2]]
                 majorDict['一级学科'] = self.firstClassSubjectIndex[majorDict['专业代码'][:4]]
                 self.logger.info(majorDict)
                 yield majorDict
         except Exception as e:
-            self.logger.error(traceback.format_exc(e))
+            self.logger.error(traceback.format_exc())
 
     # 生成省市代码， 一级学科代码
     def __ssdm_yjxk(self, ssdm, yjxkdm):
         if yjxkdm == '' and ssdm == '':
-            for province in st.provinceList:
+            for province in self.settings.get('PROVINCE_LISE'):
                 for key in self.firstClassSubjectIndex.keys():
-                    if str(key).startswith(st.mldm): yield province, key
+                    if str(key).startswith(self.settings.get('MLDM')): yield province, key
         elif yjxkdm == '':
             for key in self.firstClassSubjectIndex.keys():
-                if str(key).startswith(st.mldm): yield ssdm, key
+                if str(key).startswith(self.settings.get('MLDM')): yield ssdm, key
         elif ssdm == '':
-            for province in st.provinceList: yield province, yjxkdm
+            for province in self.settings.get('PROVINCE_LISE'): yield province, yjxkdm
         else:
             yield ssdm, yjxkdm
 
     # 判断学校性质
     def __getSchoolFeature(self, schName):
         feature = ''
-        if schName in st.list_211:
+        if schName in self.settings.get('LIST_211'):
             feature = '211'
-            if schName in st.list_985:
+            if schName in self.settings.get('LIST_985'):
                 feature = '985'
         return feature
 
     # 获取下一页url
-    def __nextPageUrl(self, response):
+    def __next_page_url(self, response):
         url = ''
         page = response.xpath('//div[re:test(@class,"zsml-page-box")]/ul/li').css('a::attr(onclick)').extract()
         page = page[len(page) - 1]
@@ -123,6 +128,6 @@ class SchoolsSpider(scrapy.Spider):
                 nextPage = re.findall(r'\(.*?\)', page)[0][1:-1]
                 url = re.sub(r'pageno=\d*', 'pageno=' + nextPage, response.url)
             except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+                self.logger.error(traceback.format_exc())
         return url
 

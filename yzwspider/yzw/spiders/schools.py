@@ -36,7 +36,7 @@ class SchoolsSpider(scrapy.Spider):
                 url = re.sub(r'dwmc=', 'dwmc=' + schName, url)
                 yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse_school)
             except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+                self.logger.error(traceback.format_exc())
                 continue
         # 翻页
         url = self.__next_page_url(response)
@@ -54,7 +54,7 @@ class SchoolsSpider(scrapy.Spider):
                 url = 'https://yz.chsi.com.cn' + majorInfo[i].css('td')[7].css('a::attr(href)')[0].extract()
                 yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse_major)
             except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+                self.logger.error(traceback.format_exc())
                 continue
         # 翻页
         url = self.__next_page_url(response)
@@ -91,7 +91,7 @@ class SchoolsSpider(scrapy.Spider):
                 self.logger.info(majorDict)
                 yield majorDict
         except Exception as e:
-            self.logger.error(traceback.format_exc(e))
+            self.logger.error(traceback.format_exc())
 
     # 生成省市代码， 一级学科代码
     def __ssdm_yjxk(self, ssdm, yjxkdm):
@@ -128,6 +128,6 @@ class SchoolsSpider(scrapy.Spider):
                 nextPage = re.findall(r'\(.*?\)', page)[0][1:-1]
                 url = re.sub(r'pageno=\d*', 'pageno=' + nextPage, response.url)
             except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+                self.logger.error(traceback.format_exc())
         return url
 

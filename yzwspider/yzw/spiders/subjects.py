@@ -29,4 +29,4 @@ class SubjectsSpider(scrapy.Spider):
                 f.write(str(firstClassSubjectIndex))
             self.logger.info("一级学科目录抓取完成.")
         except Exception as e:
-            self.logger.error(traceback.format_exc(e))
+            self.logger.error(traceback.format_exc())

@@ -6,6 +6,7 @@ import os
 from twisted.enterprise import adbapi
 import traceback
 
+logger = logging.getLogger("YzwPipeline")
 
 
 class YzwPipeline(object):
@@ -16,7 +17,7 @@ class YzwPipeline(object):
         excel_path = os.getcwd() if settings.get("EXCEL_FILE_PATH") == '.' else settings.get("EXCEL_FILE_PATH")
         excel_file = settings.get("EXCEL_FILE_NAME") + '.xls'
         self.excelFile = os.path.join(excel_path, excel_file)
-        self.logger = logging.getLogger("YzwPipeline")
+        
 
     @classmethod
     def from_settings(cls, settings):
@@ -31,6 +32,7 @@ class YzwPipeline(object):
         )
         db_connect_pool = None
         if settings.get("MYSQL"):
+            YzwPipeline.__test_mysql_settings(**params)
             db_connect_pool = adbapi.ConnectionPool('pymysql', **params)
         obj = cls(db_connect_pool, settings)
         return obj
@@ -41,9 +43,9 @@ class YzwPipeline(object):
             re = txn.execute(sql)
             sql = self.settings.get("CREATE_TEBLE_SQL").format(self.settings.get("TABLE"))
             re = txn.execute(sql)
-            self.logger.info("创建表:'%s'成功." % self.settings.get('TABLE'))
+            logger.info("创建表:'%s'成功." % self.settings.get('TABLE'))
         except Exception as e:
-            self.logger.critical(traceback.format_exc(e))
+            logger.critical(traceback.format_exc())
 
     def open_spider(self, spider):
         if self.dbpool:
@@ -55,12 +57,12 @@ class YzwPipeline(object):
         try:
             if self.dbpool:
                 self.dbpool.close()
-                self.logger.info("数据已存储于数据库" + self.settings.get("DATABASE") + "， 表："+ self.settings.get("TABLE"))
+                logger.info("数据已存储于数据库" + self.settings.get("DATABASE") + "， 表："+ self.settings.get("TABLE"))
             else:
                 self.wbk.save(self.excelFile)
-                self.logger.info("excel文件已存储于 "+ self.excelFile)
+                logger.info("excel文件已存储于 "+ self.excelFile)
         except Exception as e:
-            self.logger.error(traceback.format_exc(e))
+            logger.error(traceback.format_exc())
 
     def process_item(self, item, spider):
         try:
@@ -69,7 +71,7 @@ class YzwPipeline(object):
             else:
                 self.process_excel(item)
         except Exception as e:
-            self.logger.critical(traceback.format_exc(e))
+            logger.critical(traceback.format_exc())
 
     def process_mysql(self, item):
         result = self.dbpool.runInteraction(self.insert, item)
@@ -87,7 +89,7 @@ class YzwPipeline(object):
     def error(self, reason):
         #跳过主键重复error
         if reason.value.args[0] != 1062:
-            self.logger.critical("insert to database err: -------------\n" + reason.getErrorMessage() +"\n"+ str(reason.getTraceback()))
+            logger.error("insert to database err: -------------\n" + reason.getErrorMessage() +"\n"+ str(reason.getTraceback()))
 
     def process_excel(self, item):
         flag = False if (self.row & 1 == 0) else True
@@ -163,3 +165,13 @@ class YzwPipeline(object):
         style = self.getExcelTitleStyle()
         for i in range(0, 17):
             self.sheet.write(0, i, self.list[i], style)
+
+    @staticmethod
+    def __test_mysql_settings(**params):
+        try:
+            db = pymysql.connect(**params)
+            db.close()
+        except Exception as e:
+            logger.critical(str(e))
+            os._exit(1)
+    

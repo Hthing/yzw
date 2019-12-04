@@ -4,12 +4,10 @@ from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
 from yzwspider.yzw.spiders import schools, subjects
 from scrapy.utils.log import configure_logging
-from twisted.python import log
-import logging
-
+import os
 
 def startup(my_settings={}):
-
+    os.environ.setdefault('SCRAPY_SETTINGS_MODULE', 'yzwspider.yzw.settings')
     settings = get_project_settings()
     for key, value in my_settings.items():
         settings.attributes[key].value = value
@@ -28,4 +26,3 @@ def startup(my_settings={}):
 
 if __name__ == '__main__':
     startup()
-    pass

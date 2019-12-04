@@ -14,7 +14,6 @@ class SubjectsSpider(scrapy.Spider):
     PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     custom_settings = {
         'ITEM_PIPELINES': None,
-        'LOG_LEVEL': 'ERROR',
     }
 
     def start_requests(self):
@@ -28,5 +27,6 @@ class SubjectsSpider(scrapy.Spider):
             path = os.path.join(self.PROJECT_ROOT, self.settings.get('FCSI_FILE'))
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(str(firstClassSubjectIndex))
+            self.logger.info("一级学科目录抓取完成.")
         except Exception as e:
             self.logger.error(traceback.format_exc(e))

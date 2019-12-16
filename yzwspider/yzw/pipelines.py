@@ -5,6 +5,7 @@ import logging
 import os
 from twisted.enterprise import adbapi
 import traceback
+from yzwspider.yzw.items import YzwItem
 
 logger = logging.getLogger("YzwPipeline")
 
@@ -17,7 +18,6 @@ class YzwPipeline(object):
         excel_path = os.getcwd() if settings.get("EXCEL_FILE_PATH") == '.' else settings.get("EXCEL_FILE_PATH")
         excel_file = settings.get("EXCEL_FILE_NAME") + '.xls'
         self.excelFile = os.path.join(excel_path, excel_file)
-        
 
     @classmethod
     def from_settings(cls, settings):
@@ -57,10 +57,10 @@ class YzwPipeline(object):
         try:
             if self.dbpool:
                 self.dbpool.close()
-                logger.info("数据已存储于数据库" + self.settings.get("DATABASE") + "， 表："+ self.settings.get("TABLE"))
+                logger.info("数据已存储于数据库" + self.settings.get("DATABASE") + "， 表：" + self.settings.get("TABLE"))
             else:
                 self.wbk.save(self.excelFile)
-                logger.info("excel文件已存储于 "+ self.excelFile)
+                logger.info("excel文件已存储于 " + self.excelFile)
         except Exception as e:
             logger.error(traceback.format_exc())
 
@@ -82,14 +82,17 @@ class YzwPipeline(object):
         insert_sql = "insert into {0} (`id`, `招生单位`, `院校特性`, `院系所`, `专业`,`研究方向`,`学习方式`, `拟招生人数`" \
                      ", `业务课一`, `业务课二`, `外语`, `政治`, `所在地`, `专业代码`,`指导老师`, `门类`, `一级学科` ) " \
                      "VALUES ('{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}', '{15}', '{16}','{17}')" \
-            .format(self.settings.get('TABLE'), item['id'], item['招生单位'], item['院校特性'], item['院系所'], item['专业'], item['研究方向'], item['学习方式'], item['拟招生人数'],
-            item['业务课一'], item['业务课二'], item['外语'], item['政治'], item['所在地'], item['专业代码'], item['指导老师'], item['门类'],item['一级学科'])
+            .format(self.settings.get('TABLE'), item['id'], item['招生单位'], item['院校特性'], item['院系所'], item['专业'],
+                    item['研究方向'], item['学习方式'], item['拟招生人数'],
+                    item['业务课一'], item['业务课二'], item['外语'], item['政治'], item['所在地'], item['专业代码'], item['指导老师'],
+                    item['门类'], item['一级学科'])
         cursor.execute(insert_sql)
 
     def error(self, reason):
-        #跳过主键重复error
+        # 跳过主键重复error
         if reason.value.args[0] != 1062:
-            logger.error("insert to database err: -------------\n" + reason.getErrorMessage() +"\n"+ str(reason.getTraceback()))
+            logger.error("insert to database err: -------------\n" + reason.getErrorMessage() + "\n" + str(
+                reason.getTraceback()))
 
     def process_excel(self, item):
         flag = False if (self.row & 1 == 0) else True
@@ -101,7 +104,7 @@ class YzwPipeline(object):
             alignment = xlwt.Alignment()
             alignment.horz = xlwt.Alignment.HORZ_CENTER
             style.alignment = alignment
-        for i in range(0, 17):
+        for i in range(0, YzwItem.fields.__len__()):
             ret = self.sheet.write(self.row, i, item[self.list[i]], style)
         self.row += 1
 
@@ -163,7 +166,7 @@ class YzwPipeline(object):
         self.list = ['id', '招生单位', '院校特性', '院系所', '专业', '研究方向', '学习方式', '拟招生人数'
             , '业务课一', '业务课二', '外语', '政治', '所在地', '专业代码', '指导老师', '门类', '一级学科']
         style = self.getExcelTitleStyle()
-        for i in range(0, 17):
+        for i in range(0, YzwItem.fields.__len__()):
             self.sheet.write(0, i, self.list[i], style)
 
     @staticmethod
@@ -174,4 +177,3 @@ class YzwPipeline(object):
         except Exception as e:
             logger.critical(str(e))
             os._exit(1)
-    

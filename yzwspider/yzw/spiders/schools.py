@@ -3,6 +3,7 @@ import scrapy
 import re
 import os
 import traceback
+from yzwspider.yzw.items import YzwItem
 
 
 class SchoolsSpider(scrapy.Spider):
@@ -64,32 +65,32 @@ class SchoolsSpider(scrapy.Spider):
     # 爬取专业信息
     def parse_major(self, response):
         try:
-            majorDict = {}
+            item = YzwItem()
             province = response.meta['ssdm']
             majorInfo = response.css('table')[0].css('tr')
             examRange = response.xpath('//tbody[re:test(@class,"zsml-res-items")]')
             for num in range(0,len(examRange)):
                 body = examRange[num]
-                majorDict['id'] = response.url[-19:] + str(num+1).zfill(2)
-                majorDict['招生单位'] = majorInfo[0].css('td::text')[1].extract()[7:]
-                majorDict['院校特性'] = self.__getSchoolFeature(majorDict['招生单位'])
-                majorDict['院系所'] = majorInfo[1].css('td::text')[1].extract()[5:]
-                majorDict['专业'] = majorInfo[2].css('td::text')[1].extract()
-                majorDict['研究方向'] = majorInfo[3].css('td::text')[1].extract()
-                majorDict['学习方式'] = majorInfo[2].css('td::text')[3].extract()
-                majorDict['拟招生人数'] = majorInfo[4].css('td::text')[1].extract()
-                majorDict['政治'] = re.sub(r'\s', '', body.css('td::text')[0].extract())
-                majorDict['外语'] = re.sub(r'\s', '', body.css('td::text')[2].extract())
-                majorDict['业务课一'] = re.sub(r'\s', '', body.css('td::text')[3].extract())
-                majorDict['业务课二'] = re.sub(r'\s', '', body.css('td::text')[4].extract())
-                majorDict['所在地'] = self.settings.get('PROVINCE_DICT')[province]
-                majorDict['指导老师'] = majorInfo[3].xpath('td')[3].xpath('text()').extract()
-                majorDict['指导老师'] = majorDict['指导老师'][0] if majorDict['指导老师'] else ''
-                majorDict['专业代码'] = majorDict['专业'][1:7]
-                majorDict['门类'] = self.settings.get('SUBJECT_INDEX')[majorDict['专业代码'][:2]]
-                majorDict['一级学科'] = self.firstClassSubjectIndex[majorDict['专业代码'][:4]]
-                self.logger.info(majorDict)
-                yield majorDict
+                item['id'] = response.url[-19:] + str(num+1).zfill(2)
+                item['招生单位'] = majorInfo[0].css('td::text')[1].extract()[7:]
+                item['院校特性'] = self.__getSchoolFeature(item['招生单位'])
+                item['院系所'] = majorInfo[1].css('td::text')[1].extract()[5:]
+                item['专业'] = majorInfo[2].css('td::text')[1].extract()
+                item['研究方向'] = majorInfo[3].css('td::text')[1].extract()
+                item['学习方式'] = majorInfo[2].css('td::text')[3].extract()
+                item['拟招生人数'] = majorInfo[4].css('td::text')[1].extract()
+                item['政治'] = re.sub(r'\s', '', body.css('td::text')[0].extract())
+                item['外语'] = re.sub(r'\s', '', body.css('td::text')[2].extract())
+                item['业务课一'] = re.sub(r'\s', '', body.css('td::text')[3].extract())
+                item['业务课二'] = re.sub(r'\s', '', body.css('td::text')[4].extract())
+                item['所在地'] = self.settings.get('PROVINCE_DICT')[province]
+                item['指导老师'] = majorInfo[3].xpath('td')[3].xpath('text()').extract()
+                item['指导老师'] = item['指导老师'][0] if item['指导老师'] else ''
+                item['专业代码'] = item['专业'][1:7]
+                item['门类'] = self.settings.get('SUBJECT_INDEX')[item['专业代码'][:2]]
+                item['一级学科'] = self.firstClassSubjectIndex[item['专业代码'][:4]]
+                self.logger.info(item)
+                yield item
         except Exception as e:
             self.logger.error(traceback.format_exc())
 

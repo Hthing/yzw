@@ -110,12 +110,7 @@ class SchoolsSpider(scrapy.Spider):
 
     # 判断学校性质
     def __getSchoolFeature(self, schName):
-        feature = ''
-        if schName in self.settings.get('LIST_211'):
-            feature = '211'
-            if schName in self.settings.get('LIST_985'):
-                feature = '985'
-        return feature
+        return self.settings.get('SCHOOL_FEATURE').get(schName, "")
 
     # 获取下一页url
     def __next_page_url(self, response):

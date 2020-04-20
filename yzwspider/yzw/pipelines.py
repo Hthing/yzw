@@ -80,10 +80,10 @@ class YzwPipeline(object):
 
     def insert(self, cursor, item):
         insert_sql = "insert into {0} (`id`, `招生单位`, `院校特性`, `院系所`, `专业`,`研究方向`,`学习方式`, `拟招生人数`" \
-                     ", `业务课一`, `业务课二`, `外语`, `政治`, `所在地`, `专业代码`,`指导老师`, `门类`, `一级学科` ) " \
-                     "VALUES ('{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}', '{15}', '{16}','{17}')" \
+                     ", `备注`, `业务课一`, `业务课二`, `外语`, `政治`, `所在地`, `专业代码`,`指导老师`, `门类`, `一级学科` ) " \
+                     "VALUES ('{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}', '{15}', '{16}','{17}','{18}')" \
             .format(self.settings.get('TABLE'), item['id'], item['招生单位'], item['院校特性'], item['院系所'], item['专业'],
-                    item['研究方向'], item['学习方式'], item['拟招生人数'],
+                    item['研究方向'], item['学习方式'], item['拟招生人数'], item['备注'],
                     item['业务课一'], item['业务课二'], item['外语'], item['政治'], item['所在地'], item['专业代码'], item['指导老师'],
                     item['门类'], item['一级学科'])
         cursor.execute(insert_sql)
@@ -163,8 +163,9 @@ class YzwPipeline(object):
         self.sheet.col(14).width = 2000
         self.sheet.col(15).width = 2000
         self.sheet.col(16).width = 6000
+        self.sheet.col(17).width = 10000
         self.list = ['id', '招生单位', '院校特性', '院系所', '专业', '研究方向', '学习方式', '拟招生人数'
-            , '业务课一', '业务课二', '外语', '政治', '所在地', '专业代码', '指导老师', '门类', '一级学科']
+            , '业务课一', '业务课二', '外语', '政治', '所在地', '专业代码', '指导老师', '门类', '一级学科', '备注']
         style = self.getExcelTitleStyle()
         for i in range(0, YzwItem.fields.__len__()):
             self.sheet.write(0, i, self.list[i], style)

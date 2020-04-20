@@ -30,7 +30,7 @@ class SchoolsSpider(scrapy.Spider):
 
     # 爬取学校目录
     def parse(self, response):
-        for tr in response.xpath('//tbody/tr'):
+        for tr in response.xpath('//tbody/tr[not(@class="noResult")]'):
             try:
                 schName = tr.xpath('.//a[re:test(@href,"/zsml/querySchAction.do?")]/text()').extract()[0][7:]
                 url = re.sub(r'queryAction', 'querySchAction', response.url)
@@ -71,7 +71,7 @@ class SchoolsSpider(scrapy.Spider):
             examRange = response.xpath('//tbody[re:test(@class,"zsml-res-items")]')
             for num in range(0,len(examRange)):
                 body = examRange[num]
-                item['id'] = response.url[-19:] + str(num+1).zfill(2)
+                item['id'] = response.url[-19:] + str(num+1).zfill(3)
                 item['招生单位'] = majorInfo[0].css('td::text')[1].extract()[7:]
                 item['院校特性'] = self.__getSchoolFeature(item['招生单位'])
                 item['院系所'] = majorInfo[1].css('td::text')[1].extract()[5:]
@@ -79,6 +79,8 @@ class SchoolsSpider(scrapy.Spider):
                 item['研究方向'] = majorInfo[3].css('td::text')[1].extract()
                 item['学习方式'] = majorInfo[2].css('td::text')[3].extract()
                 item['拟招生人数'] = majorInfo[4].css('td::text')[1].extract()
+                comments = majorInfo[5].css('.zsml-bz::text')
+                item['备注'] = comments[1].get() if len(comments) > 1 else ""
                 item['政治'] = re.sub(r'\s', '', body.css('td::text')[0].extract())
                 item['外语'] = re.sub(r'\s', '', body.css('td::text')[2].extract())
                 item['业务课一'] = re.sub(r'\s', '', body.css('td::text')[3].extract())

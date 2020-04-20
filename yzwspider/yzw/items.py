@@ -11,6 +11,7 @@ class YzwItem(scrapy.Item):
     研究方向 = scrapy.Field()
     学习方式 = scrapy.Field()
     拟招生人数 = scrapy.Field()
+    备注 = scrapy.Field()
     业务课一 = scrapy.Field()
     业务课二 = scrapy.Field()
     外语 = scrapy.Field()

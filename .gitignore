@@ -1,3 +1,6 @@
+first_class_subject_index.txt
+setup.py
+*.xls
 # Byte-compiled / optimized / DLL files
 **/__pycache__/
 *.py[cod]

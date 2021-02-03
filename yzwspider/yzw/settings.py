@@ -50,7 +50,7 @@ SUBJECT_INDEX = {'01': '哲学', '02': '经济学', '03': '法学', '04': '教�
 CREATE_TEBLE_SQL = "CREATE TABLE `{0}` (" \
                    "`id` char(22) PRIMARY KEY,`招生单位` varchar(40) NOT NULL," \
                    "`院校特性` varchar(10) DEFAULT NULL," \
-                   "`院系所` varchar(40) DEFAULT NULL," \
+                   "`院系所` varchar(100) DEFAULT NULL," \
                    "`专业` varchar(40) DEFAULT NULL," \
                    "`研究方向` TEXT DEFAULT NULL," \
                    "`学习方式` varchar(30) DEFAULT NULL," \

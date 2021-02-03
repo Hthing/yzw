@@ -32,7 +32,8 @@ class SchoolsSpider(scrapy.Spider):
     def parse(self, response):
         for tr in response.xpath('//tbody/tr[not(@class="noResult")]'):
             try:
-                schName = tr.xpath('.//a[re:test(@href,"/zsml/querySchAction.do?")]/text()').extract()[0][7:]
+                school = tr.xpath('.//a[re:test(@href,"/zsml/querySchAction.do?")]/text()').get()
+                schName = school[7:]
                 url = re.sub(r'queryAction', 'querySchAction', response.url)
                 url = re.sub(r'dwmc=', 'dwmc=' + schName, url)
                 yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse_school)

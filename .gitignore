@@ -1,5 +1,6 @@
 first_class_subject_index.txt
 setup.py
+setup.cfg
 *.xls
 # Byte-compiled / optimized / DLL files
 **/__pycache__/

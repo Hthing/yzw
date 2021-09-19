@@ -79,9 +79,9 @@ class SchoolsSpider(scrapy.Spider):
                 item['专业'] = majorInfo[1].css('td::text')[3].extract()
                 item['学习方式'] = majorInfo[2].css('td::text')[1].extract()
                 item['研究方向'] = majorInfo[2].css('td::text')[3].extract()
-                item['指导老师'] = majorInfo[3].xpath('td')[1].xpath('text()').extract()
-                item['指导老师'] = item['指导老师'][0] if item['指导老师'] else ''
-                item['拟招生人数'] = majorInfo[3].css('td::text')[2].extract()
+                item['指导老师'] = majorInfo[3].css('td.zsml-summary')[0].css('::text').get()
+                item['指导老师'] = item['指导老师'] if item['指导老师'] else ''
+                item['拟招生人数'] = majorInfo[3].css('td.zsml-summary')[1].css('::text').get()
                 comments = majorInfo[4].css('.zsml-bz::text')
                 item['备注'] = comments[1].get() if len(comments) > 1 else ""
                 item['政治'] = re.sub(r'\s', '', body.css('td::text')[0].extract())

@@ -15,45 +15,26 @@ scrapy爬取研招网研究生考试专业信息
 
 ```
 pip install --upgrade yzwspider
+python -m yzwspider
 ```
 
-其中使用了pymysq、scrapy、xlwt第三方库
+或者clone到本地使用
+```
+git clone https://github.com/Hthing/yzw.git
+cd yzw
+pip install -r requirements.txt
+python -m yzwspider
+```
 
 
 
 ## 运行环境：
-python3.7以上（使用了argparse模块的新参数）
-
-## 数据格式：
-
-建表语句存于yzwspider/yzw/settings.py中， 爬取时会自动建表（数据库要提前建立）。
-
-```mysql
-CREATE TABLE `major` (
-  `id` char(22) PRIMARY KEY, # id 为爬取页面的id参数+考试范围序号
-  `招生单位` varchar(40) NOT NULL,
-  `院校特性` varchar(10) DEFAULT NULL,
-  `院系所` varchar(40) DEFAULT NULL,
-  `专业` varchar(40) DEFAULT NULL,
-  `研究方向` TEXT DEFAULT NULL,
-  `学习方式` varchar(30) DEFAULT NULL,
-  `拟招生人数` varchar(40) DEFAULT NULL,
-  `备注` TEXT DEFAULT NULL,
-  `业务课一` varchar(40) DEFAULT NULL,
-  `业务课二` varchar(40) DEFAULT NULL,
-  `外语` varchar(40) DEFAULT NULL,
-  `政治` varchar(40) DEFAULT NULL,
-  `所在地` varchar(30) DEFAULT NULL,
-  `指导老师` TEXT DEFAULT NULL,
-  `专业代码` varchar(10) DEFAULT NULL,
-  `门类` varchar(20) DEFAULT NULL,
-  `一级学科` varchar(40) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8
-```
-
+python3.7以上
 
 
 ## 使用方法
+
+**需提前建立数据库**
 
 省市代码，学科门类，一级学科代码（学科类别） 可在研招网查得。 例，计算机科学与技术：0812
 

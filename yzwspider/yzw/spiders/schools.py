@@ -38,7 +38,7 @@ class SchoolsSpider(scrapy.Spider):
                 url = re.sub(r'dwmc=', 'dwmc=' + schName, url)
                 yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse_school)
             except Exception as e:
-                self.logger.error(traceback.format_exc())
+                self.logger.error(f"爬取学校目录错误. url={response.url}")
                 continue
         # 翻页
         url = self.__next_page_url(response)
@@ -56,7 +56,7 @@ class SchoolsSpider(scrapy.Spider):
                 url = 'https://yz.chsi.com.cn' + majorInfo[i].css('td')[7].css('a::attr(href)')[0].extract()
                 yield scrapy.Request(url, meta={'ssdm':response.meta['ssdm']}, callback=self.parse_major)
             except Exception as e:
-                self.logger.error(traceback.format_exc())
+                self.logger.error(f"爬取学校页面错误. url={response.url}")
                 continue
         # 翻页
         url = self.__next_page_url(response)
@@ -76,26 +76,26 @@ class SchoolsSpider(scrapy.Spider):
                 item['招生单位'] = majorInfo[0].css('td::text')[1].extract()[7:]
                 item['院校特性'] = self.__getSchoolFeature(item['招生单位'])
                 item['院系所'] = majorInfo[1].css('td::text')[1].extract()[5:]
-                item['专业'] = majorInfo[2].css('td::text')[1].extract()
-                item['研究方向'] = majorInfo[3].css('td::text')[1].extract()
-                item['学习方式'] = majorInfo[2].css('td::text')[3].extract()
-                item['拟招生人数'] = majorInfo[4].css('td::text')[1].extract()
-                comments = majorInfo[5].css('.zsml-bz::text')
+                item['专业'] = majorInfo[1].css('td::text')[3].extract()
+                item['学习方式'] = majorInfo[2].css('td::text')[1].extract()
+                item['研究方向'] = majorInfo[2].css('td::text')[3].extract()
+                item['指导老师'] = majorInfo[3].xpath('td')[1].xpath('text()').extract()
+                item['指导老师'] = item['指导老师'][0] if item['指导老师'] else ''
+                item['拟招生人数'] = majorInfo[3].css('td::text')[2].extract()
+                comments = majorInfo[4].css('.zsml-bz::text')
                 item['备注'] = comments[1].get() if len(comments) > 1 else ""
                 item['政治'] = re.sub(r'\s', '', body.css('td::text')[0].extract())
                 item['外语'] = re.sub(r'\s', '', body.css('td::text')[2].extract())
                 item['业务课一'] = re.sub(r'\s', '', body.css('td::text')[3].extract())
                 item['业务课二'] = re.sub(r'\s', '', body.css('td::text')[4].extract())
                 item['所在地'] = self.settings.get('PROVINCE_DICT')[province]
-                item['指导老师'] = majorInfo[3].xpath('td')[3].xpath('text()').extract()
-                item['指导老师'] = item['指导老师'][0] if item['指导老师'] else ''
                 item['专业代码'] = item['专业'][1:7]
                 item['门类'] = self.settings.get('SUBJECT_INDEX')[item['专业代码'][:2]]
                 item['一级学科'] = self.firstClassSubjectIndex[item['专业代码'][:4]]
                 self.logger.info(item)
                 yield item
         except Exception as e:
-            self.logger.error(traceback.format_exc())
+            self.logger.error(f"爬取专业信息错误. url={response.url}")
 
     # 生成省市代码， 一级学科代码
     def __ssdm_yjxk(self, ssdm, yjxkdm):

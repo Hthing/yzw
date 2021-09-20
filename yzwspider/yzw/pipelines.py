@@ -76,20 +76,17 @@ class YzwPipeline(object):
     def process_mysql(self, item):
         result = self.dbpool.runInteraction(self.insert, item)
         # 给result绑定一个回调函数，用于监听错误信息
-        result.addErrback(self.error)
+        result.addErrback(self.error, item)
 
     def insert(self, cursor, item):
-        insert_sql = f"""insert into `{self.settings.get('TABLE')}` 
-            (`id`, `招生单位`, `院校特性`, `院系所`, `专业`,`研究方向`,`学习方式`, `拟招生人数`, `备注`, `业务课一`, `业务课二`, `外语`, `政治`, `所在地`, `专业代码`,`指导老师`, `门类`, `一级学科` )
-             VALUES ('{item['id']}','{item['招生单位']}','{item['院校特性']}','{item['院系所']}','{item['专业']}','{item['研究方向']}',
-             '{item['学习方式']}','{item['拟招生人数']}','{item['备注']}','{item['业务课一']}','{item['业务课二']}','{item['外语']}',
-             '{item['政治']}','{item['所在地']}', '{item['专业代码']}', '{item['指导老师']}','{item['门类']}','{item['一级学科']}')"""
+        insert_sql = self.__make_sql(item)
         cursor.execute(insert_sql)
 
-    def error(self, reason):
+    def error(self, reason, item):
         # 跳过主键重复error
         if reason.value.args[0] != 1062:
-            logger.error("insert to database err: -------------\n" + reason.getErrorMessage())
+            logger.error(
+                "insert to database err: ---------\n" + reason.getErrorMessage() + f"sql=\n{self.__make_sql(item)}")
 
     def process_excel(self, item):
         flag = False if (self.row & 1 == 0) else True
@@ -175,3 +172,13 @@ class YzwPipeline(object):
         except Exception as e:
             logger.critical(str(e))
             os._exit(1)
+
+    def __make_sql(self, item):
+        sql = f"""insert into `{self.settings.get('TABLE')}` 
+            (`id`, `招生单位`, `院校特性`, `院系所`, `专业`,`研究方向`,`学习方式`, `拟招生人数`, `备注`, `业务课一`, `业务课二`, `外语`, `政治`, `所在地`, `专业代码`,`指导老师`, `门类`, `一级学科` )
+             VALUES ('{item['id']}','{item['招生单位']}','{item['院校特性']}','{item['院系所']}','{item['专业']}','{item['研究方向']}',
+             '{item['学习方式']}','{item['拟招生人数']}','{item['备注']}','{item['业务课一']}','{item['业务课二']}','{item['外语']}',
+             '{item['政治']}','{item['所在地']}', '{item['专业代码']}', '{item['指导老师']}','{item['门类']}','{item['一级学科']}')"""
+        # 处理转义字符
+        sql = sql.replace("\\'", "\\\\'")
+        return sql

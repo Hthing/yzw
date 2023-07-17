@@ -98,10 +98,18 @@ yzwspider参数： （括号内为默认值）
 python -m yzwspider -ssdm 11 -yjxk 0812 mysql -u root -p **** -host ******* -table test
 ```
 
+**爬取全部数据(仅支持mysql)**
+```
+python -m yzwspider --all mysql -u root -p **** -host ******* -port *** -db 数据库名 -table 数据表名 
+```
+
 爬取全国某专业
 ```
 python -m yzwspider  -ssdm 0 -yjxk 0812 mysql -u *** -p ***
 ```
+
+
+
 
 输出信息类似于excel.  如果想保存日志则加上--log即可
 

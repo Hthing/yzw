@@ -84,7 +84,7 @@ class SchoolsSpider(scrapy.Spider):
                 item['拟招生人数'] = majorInfo[3].css('td.zsml-summary')[1].css('::text').get().strip()
                 item['是否接收退役大学生士兵专项计划考生报考'] = majorInfo[4].css('td').css('strong::text').get().strip()
                 comments = majorInfo[5].css('.zsml-bz::text')
-                item['备注'] = comments[1].get() if len(comments) > 1 else ""
+                item['备注'] = comments[1].get().strip() if len(comments) > 1 else ""
                 item['政治'] = body.css('td::text')[0].get().strip()
                 item['外语'] = body.css('td::text')[2].get().strip()
                 item['业务课一'] = body.css('td::text')[4].get().strip()

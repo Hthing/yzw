@@ -62,6 +62,7 @@ CREATE_TEBLE_SQL = "CREATE TABLE `{0}` (" \
                    "`政治` varchar(40) DEFAULT NULL," \
                    "`所在地` varchar(30) DEFAULT NULL," \
                    "`指导老师` TEXT DEFAULT NULL," \
+                   "`是否接收退役大学生士兵专项计划考生报考` varchar(30) DEFAULT NULL," \
                    "`专业代码` varchar(10) DEFAULT NULL," \
                    "`门类` varchar(20) DEFAULT NULL," \
                    "`一级学科` varchar(40) DEFAULT NULL)" \

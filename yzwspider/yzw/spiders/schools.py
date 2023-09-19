@@ -73,21 +73,22 @@ class SchoolsSpider(scrapy.Spider):
             for num in range(0,len(examRange)):
                 body = examRange[num]
                 item['id'] = response.url[-19:] + str(num+1).zfill(3)
-                item['招生单位'] = majorInfo[0].css('td::text')[1].extract()[7:]
+                item['招生单位'] = majorInfo[0].css('td::text')[1].extract().strip()[7:]
                 item['院校特性'] = self.__getSchoolFeature(item['招生单位'])
-                item['院系所'] = majorInfo[1].css('td::text')[1].extract()[5:]
-                item['专业'] = majorInfo[1].css('td::text')[3].extract()
-                item['学习方式'] = majorInfo[2].css('td::text')[1].extract()
-                item['研究方向'] = majorInfo[2].css('td::text')[3].extract()
-                item['指导老师'] = majorInfo[3].css('td.zsml-summary')[0].css('::text').get()
+                item['院系所'] = majorInfo[1].css('td::text')[1].extract().strip()[5:]
+                item['专业'] = majorInfo[1].css('td::text')[3].extract().strip()
+                item['学习方式'] = majorInfo[2].css('td::text')[1].extract().strip()
+                item['研究方向'] = majorInfo[2].css('td::text')[3].extract().strip()
+                item['指导老师'] = majorInfo[3].css('td.zsml-summary')[0].css('::text').get().strip()
                 item['指导老师'] = item['指导老师'] if item['指导老师'] else ''
-                item['拟招生人数'] = majorInfo[3].css('td.zsml-summary')[1].css('::text').get()
-                comments = majorInfo[4].css('.zsml-bz::text')
+                item['拟招生人数'] = majorInfo[3].css('td.zsml-summary')[1].css('::text').get().strip()
+                item['是否接收退役大学生士兵专项计划考生报考'] = majorInfo[4].css('td').css('strong::text').get().strip()
+                comments = majorInfo[5].css('.zsml-bz::text')
                 item['备注'] = comments[1].get() if len(comments) > 1 else ""
-                item['政治'] = re.sub(r'\s', '', body.css('td::text')[0].extract())
-                item['外语'] = re.sub(r'\s', '', body.css('td::text')[2].extract())
-                item['业务课一'] = re.sub(r'\s', '', body.css('td::text')[3].extract())
-                item['业务课二'] = re.sub(r'\s', '', body.css('td::text')[4].extract())
+                item['政治'] = body.css('td::text')[0].get().strip()
+                item['外语'] = body.css('td::text')[2].get().strip()
+                item['业务课一'] = body.css('td::text')[4].get().strip()
+                item['业务课二'] = body.css('td::text')[6].get().strip()
                 item['所在地'] = self.settings.get('PROVINCE_DICT')[province]
                 item['专业代码'] = item['专业'][1:7]
                 item['门类'] = self.settings.get('SUBJECT_INDEX')[item['专业代码'][:2]]
@@ -95,7 +96,7 @@ class SchoolsSpider(scrapy.Spider):
                 self.logger.info(item)
                 yield item
         except Exception as e:
-            self.logger.error(f"爬取专业信息错误. url={response.url}")
+            self.logger.error(f"爬取专业信息错误. url={response.url}",exc_info=True)
 
     # 生成省市代码， 一级学科代码
     def __ssdm_yjxk(self, ssdm, yjxkdm):
